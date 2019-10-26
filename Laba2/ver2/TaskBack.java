@@ -5,9 +5,11 @@ import  java.util.Arrays;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+
 public class TaskBack {
 
     private String[] data;
+    private String text;
 
     TaskBack(){            ///Тута есть конструктор       ///Создание массива
         Scanner input = new Scanner(System.in);
@@ -15,14 +17,18 @@ public class TaskBack {
         int size = input.nextInt();
         data = new String[size];
         System.out.println("Input data about contacts");
-        System.out.println("Example 1: Иванов И.И.,xxxxx@gmail.com.");
-        System.out.println("Example 2(For providers): Иванов И.И.,xxxxx@gmail.com.,Наименование груза.,Цена: ххх.rub.");
+        System.out.println("Example 1: Иванов_И.И.,xxxxx@gmail.com.");
+        System.out.println("Example 2(For providers): Иванов_И.И.,xxxxx@gmail.com.,Услуга:.,Цена:_ххх.rub.");
         System.out.println("You can using gmail.com or mail.ru");
         System.out.println("You can using rub, ₽, r");
         input.nextLine();
-        for (int i = 0; i < size; i++){
-            System.out.print("No." + ( i + 1 ) + " is ");
-                data[i] = input.nextLine();
+        text = input.nextLine();
+        int i = 0;
+        for (String splittext : text.split(" ")) {
+            if (i != size) {
+                data[i] = splittext;
+                i++;
+            }
         }
        /*for (String el : data){
             System.out.println("(" + el + ")");
@@ -47,16 +53,17 @@ public class TaskBack {
         System.out.println("Input provider");
             providers = input.nextLine();
         for (int i = 0; i < data.length; i++){
-            int index = data[i].indexOf("Наименование груза:");
+            int index = data[i].indexOf("Услуга:");
             System.out.println(index);
-            if (data[i].regionMatches(true, index + 19, providers, 0 , providers.length()))
+            if (data[i].regionMatches(true, index + 7, providers, 0 , providers.length()))
                 contacts += data[i];
                 contacts += " ";
         }
+        System.out.println("Amount contacts: " + TaskTwoThree());
         System.out.println(contacts);
     }
-    public void TaskOneThree(){ ///Колличество доменов сom в контактах
-        String domain = new String("com");
+    public void TaskOneThree(){ ///Колличество доменов сom в контактах(Я не понял, как сделать с помощью обычного сплошного текста)
+        String domain = new String("com"); //Извините
         int amount = 0;
         for (int i = 0; i < data.length; i++) {
             int index = data[i].indexOf("gmail.");
@@ -82,19 +89,31 @@ public class TaskBack {
                 System.out.println(NameList[i]);
         }
     }
-    public void TaskTwoOne(){ ///Добавление элемента в список
+    public void TaskTwoOne(){ ///Добавление элемента в список с помощью StringBuilder
         Scanner input = new Scanner(System.in);
-        System.out.println("Input amount new elements");
+        StringBuilder addcontacts = new StringBuilder(text);
+        addcontacts.append(" ");
+        System.out.println("How much contacts you want add?");
         int amount = input.nextInt();
-        String NewData[] = Arrays.copyOf(data, data.length + amount);
+        System.out.println("Example 1: Иванов_И.И.,xxxxx@gmail.com.");
+        System.out.println("Example 2(For providers): Иванов_И.И.,xxxxx@gmail.com.,Услуга:.,Цена:_ххх.rub.");
+        System.out.println("You can using gmail.com or mail.ru");
+        System.out.println("You can using rub, ₽, r");
+        System.out.println("Input NEW data about contacts");
         input.nextLine();
-        for (int i = data.length; i < NewData.length; i++){
-            System.out.print("No." + ( i + 1 ) + " is ");
-            NewData[i] = input.nextLine();
+        addcontacts = addcontacts.append(input.nextLine());
+        text = new String(addcontacts);
+        data = new String[data.length + amount];
+        int i = 0;
+        for (String splittext : text.split(" ")) {
+            if (i != data.length) {
+                data[i] = splittext;
+                i++;
+            }
         }
-        /*for (String el : NewData){
-            System.out.println("(" + el + ")");
-        }*/
+        for (String el : data){
+            System.out.println( el );
+        }
     }
     public void TaskTwoTwo(){ ///Вставка правильного домена, если сам домен не написан
         String domain = new String("com.");
@@ -102,40 +121,33 @@ public class TaskBack {
         String post = new String("gmail");
         String post1 = new String("@mail");
         for (int i = 0; i < data.length; i++){
-            String halfstart = new String();
-            String halfend = new String();
             int index = data[i].indexOf("mail");
             int lastindex = data[i].lastIndexOf(".");
             if (data[i].regionMatches(index-1, post, 0, 5)) {
                 if (!data[i].regionMatches(index + 5, domain, 0, 4)) {
-                    halfstart += data[i].substring(0, index + 5);
-                    halfend += data[i].substring(index + 5, lastindex + 1);
-                    halfstart += domain;
-                    data[i] = halfstart;
-                    data[i] = data[i].concat(halfend);
-                    System.out.println(data[i]);
-                    halfstart = halfstart.replaceAll(halfstart, "");
-                    halfend = halfend.replaceAll(halfend, "");
+                   StringBuilder com = new StringBuilder(data[i]);
+                   com.insert(index+5, domain);
+                   String Storage1 = new String(com);
+                   data[i] = Storage1;
                 }
             }
             if (data[i].regionMatches(index-1, post1, 0, 5)) {
                 if (!data[i].regionMatches(index + 5, domain1, 0, 3)) {
-                    halfstart += data[i].substring(0, index + 5);
-                    halfend += data[i].substring(index + 5, lastindex + 1);
-                    halfstart += domain1;
-                    data[i] = halfstart;
-                    data[i] = data[i].concat(halfend);
-                    System.out.println(data[i]);
-                    halfstart = halfstart.replaceAll(halfstart, "");
-                    halfend = halfend.replaceAll(halfend, "");
+                    StringBuilder com = new StringBuilder(data[i]);
+                    com.insert(index+5, domain1);
+                    String Storage2 = new String(com);
+                    data[i] = Storage2;
                 }
             }
 
         }
-
+        for (String el : data){
+            System.out.println( el );
+        }
     }
-    public void TaskTwoThree(){ ///Кол-во контактов
+    public int TaskTwoThree(){ ///Кол-во контактов
         System.out.println("Your contact list have: " + data.length + " contacts");
+        return data.length;
     }
     ///Да, А вот и регулярочки
     public void TaskThreeOne(){  ///Ловля цен
